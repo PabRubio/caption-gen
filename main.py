@@ -1,6 +1,9 @@
 from transformers import pipeline
 from langchain.prompts import PromptTemplate
 from langchain_huggingface import HuggingFacePipeline
+from transformers.utils.logging import set_verbosity_error
+
+set_verbosity_error()
 
 image = "selfie.jpg"
 
@@ -18,3 +21,5 @@ caption = caption_pipeline(image)
 elaborated = chain.invoke({"caption": caption[0]['generated_text']})
 
 print(elaborated)
+
+print(caption)
