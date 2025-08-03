@@ -7,18 +7,18 @@ set_verbosity_error()
 
 image = "selfie.jpg"
 
-caption_pipeline = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
+pipeline = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
 
-caption = caption_pipeline(
+caption = pipeline(
     image,
     generate_kwargs={
-        "max_new_tokens": 50,
         "num_beams": 4,
         "do_sample": False,
+        "max_new_tokens": 50,
         "repetition_penalty": 1.2,
-        "length_penalty": 1.0,
+        "no_repeat_ngram_size": 3,
         "early_stopping": True,
-        "no_repeat_ngram_size": 3
+        "length_penalty": 1.0
     }
 )
 
