@@ -5,12 +5,20 @@ from transformers.utils.logging import set_verbosity_error
 
 set_verbosity_error()
 
-image = "selfie.jpg"
+image_file_path = "selfie.jpg"
 
-pipeline = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
+img2text = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
 
-caption = pipeline(
-    image,
+text_gen = pipeline("text-generation", model="facebook/opt-125m", max_new_tokens=50)
+
+template = PromptTemplate.from_template("Make the caption more creative: {caption}")
+
+enhancer = HuggingFacePipeline(pipeline=text_gen)
+
+chainz = template | enhancer
+
+caption = img2text(
+    image_file_path,
     generate_kwargs={
         "num_beams": 4,
         "do_sample": False,
@@ -22,4 +30,6 @@ caption = pipeline(
     }
 )
 
-print(caption)
+output = chainz.invoke({"caption": caption})
+
+print(output)
