@@ -10,10 +10,6 @@ set_verbosity_error()
 app = Flask(__name__)
 
 img2text = pipeline("image-to-text", model="Salesforce/blip-image-captioning-large")
-text_gen = pipeline("text-generation", model="facebook/opt-125m", max_new_tokens=50)
-template = PromptTemplate.from_template("Make the caption more creative: {caption}")
-enhancer = HuggingFacePipeline(pipeline=text_gen)
-chainz = template | enhancer
 
 @app.route('/')
 def index(): # heheboi
@@ -23,13 +19,13 @@ def index(): # heheboi
 def generate_caption():
     data = request.json
     image_data = data['image']
-    
+
     image_data = image_data.split(',')[1]
     image_bytes = base64.b64decode(image_data)
-    
+
     image_file = BytesIO(image_bytes)
     image_file_path = Image.open(image_file)
-    
+
     caption = img2text(
         image_file_path,
         generate_kwargs={
@@ -42,9 +38,8 @@ def generate_caption():
             "length_penalty": 1.0
         }
     )
-    
-    output = chainz.invoke({"caption": caption})
-    return jsonify({'caption': str(output)})
+
+    return jsonify({'caption': caption[0]['generated_text']})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
