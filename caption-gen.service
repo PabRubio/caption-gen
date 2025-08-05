@@ -1,0 +1,16 @@
+[Unit]
+Description=Caption-gen
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/pabrubio/pub/caption-gen
+ExecStart=/home/pabrubio/pub/caption-gen/venv/bin/gunicorn \
+          --preload \
+          --workers 1 \
+          --timeout 600 \
+          --bind unix:/home/pabrubio/.caption-gen.pabrubio.hackclub.app.webserver.sock \
+          app:app
+Restart=always
+
+[Install]
+WantedBy=default.target
