@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Caption Generator</title>
+</head>
+<body>
+    <h1>Image Caption Generator</h1>
+    <input type="file" id="fileInput" accept="image/*">
+    <button onclick="generateCaption()">Generate Caption</button>
+    <br><br>
+    <img id="preview" style="max-width: 500px; display: none;">
+    <br><br>
+    <div id="result"></div>
+
+    <script>
+        function generateCaption() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result; // lmao
+                preview.style.display = 'block';
+
+                document.getElementById('result').innerText = 'Generating caption...';
+
+                fetch('/generate_caption', {
+                    method: 'POST',
+                    headers: { // heheboi
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        image: e.target.result
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('result').innerText = data.caption;
+                })
+                .catch(error => {
+                    document.getElementById('result').innerText = 'Error: ' + error;
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
